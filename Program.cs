@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -76,17 +77,19 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtSettings.Get<JwtSettings>()?.Audience ?? "SportsBookingPlatformUsers",
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.Name
     };
 });
 
 builder.Services.AddAuthorization();
 
-// Configure DbContext
+// Configure DbContext with PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
+    options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection") 
-        ?? "Server=(localdb)\\mssqllocaldb;Database=SportsBookingPlatform;Trusted_Connection=True;MultipleActiveResultSets=true"));
+        ?? "Host=localhost;Database=SportsBookingPlatform;Username=postgres;Password=postgres"));
 
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
