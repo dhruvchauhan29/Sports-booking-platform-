@@ -141,6 +141,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Game>(entity =>
         {
             entity.HasKey(e => e.GameId);
+            entity.Property(e => e.Status).HasConversion<string>();
             
             entity.HasOne(e => e.Owner)
                 .WithMany(u => u.OwnedGames)
