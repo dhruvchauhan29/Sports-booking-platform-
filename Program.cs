@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SportsBookingPlatform.BackgroundServices;
 using SportsBookingPlatform.Configurations;
 using SportsBookingPlatform.Data;
 using SportsBookingPlatform.Repositories;
@@ -96,12 +97,21 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVenueRepository, VenueRepository>();
 builder.Services.AddScoped<ICourtRepository, CourtRepository>();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<ICourtService, CourtService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
+builder.Services.AddScoped<ISlotService, SlotService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+
+// Register background services
+builder.Services.AddHostedService<SlotLockExpiryService>();
 
 var app = builder.Build();
 
