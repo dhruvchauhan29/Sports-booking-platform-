@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SportsBookingPlatform.BackgroundServices;
 using SportsBookingPlatform.Configurations;
 using SportsBookingPlatform.Data;
 using SportsBookingPlatform.Repositories;
@@ -76,29 +78,47 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtSettings.Get<JwtSettings>()?.Audience ?? "SportsBookingPlatformUsers",
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.Name
     };
 });
 
 builder.Services.AddAuthorization();
 
-// Configure DbContext
+// Configure DbContext with PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
+    options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection") 
-        ?? "Server=(localdb)\\mssqllocaldb;Database=SportsBookingPlatform;Trusted_Connection=True;MultipleActiveResultSets=true"));
+        ?? "Host=localhost;Database=SportsBookingPlatform;Username=postgres;Password=postgres"));
 
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVenueRepository, VenueRepository>();
 builder.Services.AddScoped<ICourtRepository, CourtRepository>();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IWaitlistRepository, WaitlistRepository>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<ICourtService, CourtService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
+builder.Services.AddScoped<ISlotService, SlotService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IWaitlistService, WaitlistService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+
+// Register background services
+builder.Services.AddHostedService<SlotLockExpiryService>();
 
 var app = builder.Build();
 

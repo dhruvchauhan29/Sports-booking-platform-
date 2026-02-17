@@ -1,3 +1,5 @@
+using SportsBookingPlatform.Enums;
+
 namespace SportsBookingPlatform.Entities;
 
 public class Game
@@ -11,6 +13,7 @@ public class Game
     public int MaxPlayers { get; set; }
     public bool IsPublic { get; set; } = true;
     public DateTime StartTime { get; set; }
+    public GameStatus Status { get; set; } = GameStatus.Scheduled;
     public bool IsCancelled { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
